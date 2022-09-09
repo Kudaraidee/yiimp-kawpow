@@ -595,7 +595,7 @@ void *client_thread(void *p)
 		bool b = false;
 
 		if(!strcmp(method, "mining.subscribe"))
-			b = client_send_result(client, "true");
+			b = client_subscribe(client, json_params);
 
 		else if(!strcmp(method, "mining.authorize"))
 			b = kawpow_authorize(client, json_params);
