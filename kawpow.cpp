@@ -54,12 +54,12 @@ int get_kawpow_height()
     return kawpow_height;
 }
 
-void kawpow_hash(const char* input, char* output, uint32_t len)
+void kawpow_hash(const char *input, char *output, uint32_t len)
 {
     //! dummy function
 }
 
-bool kawpow_send_extranonce(YAAMP_CLIENT* client)
+bool kawpow_send_extranonce(YAAMP_CLIENT *client)
 {
     char buffer[256];
     memset(buffer, 0, sizeof(buffer));
@@ -68,7 +68,7 @@ bool kawpow_send_extranonce(YAAMP_CLIENT* client)
     return socket_send(client->sock, buffer);
 }
 
-bool kawpow_authorize(YAAMP_CLIENT* client, json_value* json_params)
+bool kawpow_authorize(YAAMP_CLIENT *client, json_value *json_params)
 {
     if (json_params->u.array.length > 1 && json_params->u.array.values[1]->u.string.ptr)
         strncpy(client->password, json_params->u.array.values[1]->u.string.ptr, 1023);
@@ -81,7 +81,7 @@ bool kawpow_authorize(YAAMP_CLIENT* client, json_value* json_params)
         if (!len)
             return false;
 
-        char* sep = strpbrk(client->username, ".,;:");
+        char *sep = strpbrk(client->username, ".,;:");
         if (sep) {
             *sep = '\0';
             strncpy(client->worker, sep + 1, 1023 - len);
@@ -133,22 +133,22 @@ bool kawpow_authorize(YAAMP_CLIENT* client, json_value* json_params)
     return true;
 }
 
-void kawpow_target_diff(double difficulty, char* buffer)
+void kawpow_target_diff(double difficulty, char *buffer)
 {
     sprintf(buffer, "0000%016llx00000000000000000000000000000000000000000000", diff_to_target(difficulty));
 }
 
-void kawpow_block_diff(uint64_t target, char* buffer)
+void kawpow_block_diff(uint64_t target, char *buffer)
 {
     sprintf(buffer, "0000%016llx00000000000000000000000000000000000000000000", target);
 }
 
-bool kawpow_set_difficulty(YAAMP_CLIENT* client, double difficulty)
+bool kawpow_set_difficulty(YAAMP_CLIENT *client, double difficulty)
 {
     client->difficulty_actual = difficulty;
 }
 
-bool kawpow_send_difficulty(YAAMP_CLIENT* client, double difficulty)
+bool kawpow_send_difficulty(YAAMP_CLIENT *client, double difficulty)
 {
     char target[128];
     memset(target, 0, sizeof(target));
@@ -159,9 +159,9 @@ bool kawpow_send_difficulty(YAAMP_CLIENT* client, double difficulty)
     return client_call(client, "mining.set_target", "[\"%s\"]", target);
 }
 
-void kawpow_job_mining_notify_buffer(YAAMP_JOB* job, YAAMP_CLIENT* client, char* buffer)
+void kawpow_job_mining_notify_buffer(YAAMP_JOB *job, YAAMP_CLIENT *client, char *buffer)
 {
-    YAAMP_JOB_TEMPLATE* templ = job->templ;
+    YAAMP_JOB_TEMPLATE *templ = job->templ;
 
     // kawpow stratum
     sprintf(buffer, "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"%x\",\"%s\",\"%s\",\"%s\",true,%d,\"%s\"]}\n",
@@ -173,7 +173,7 @@ void kawpow_job_mining_notify_buffer(YAAMP_JOB* job, YAAMP_CLIENT* client, char*
         templ->nbits);
 }
 
-void kawpow_submit_ok(YAAMP_CLIENT* client)
+void kawpow_submit_ok(YAAMP_CLIENT *client)
 {
     char buffer[256];
     memset(buffer, 0, sizeof(buffer));
@@ -181,7 +181,7 @@ void kawpow_submit_ok(YAAMP_CLIENT* client)
     socket_send_raw(client->sock, buffer, strlen(buffer));
 }
 
-bool kawpow_submit(YAAMP_CLIENT* client, json_value* json_params)
+bool kawpow_submit(YAAMP_CLIENT *client, json_value *json_params)
 {
     // submit(worker_name, jobid, nonce, header, mixhash):
     if (json_params->u.array.length < 5 || !valid_string_params(json_params)) {
@@ -211,7 +211,7 @@ bool kawpow_submit(YAAMP_CLIENT* client, json_value* json_params)
     string_lower(header);
     string_lower(mixhash);
 
-    YAAMP_JOB* job = (YAAMP_JOB*)object_find(&g_list_job, jobid, true);
+    YAAMP_JOB *job = (YAAMP_JOB *)object_find(&g_list_job, jobid, true);
     if (!job) {
         client_submit_error(client, NULL, 21, "Invalid job id", header, mixhash, nonce);
         return true;
@@ -222,7 +222,7 @@ bool kawpow_submit(YAAMP_CLIENT* client, json_value* json_params)
     }
 
     //! sanity check nonce
-    if (strlen(nonce) != KAWPOW_NONCE_SIZE * 2 || !ishexa(nonce, KAWPOW_NONCE_SIZE * 2)) {
+    if (strlen(nonce) != KAWPOW_NONCE_SIZE*2 || !ishexa(nonce, KAWPOW_NONCE_SIZE*2)) {
         client_submit_error(client, job, 20, "Invalid nonce size", header, mixhash, nonce);
         return true;
     }
@@ -233,7 +233,7 @@ bool kawpow_submit(YAAMP_CLIENT* client, json_value* json_params)
         return true;
     }
 
-    YAAMP_SHARE* share = share_find(job->id, header, mixhash, nonce, client->username);
+    YAAMP_SHARE *share = share_find(job->id, header, mixhash, nonce, client->username);
     if (share) {
         client_submit_error(client, job, 22, "Duplicate share", header, mixhash, nonce);
         return true;
