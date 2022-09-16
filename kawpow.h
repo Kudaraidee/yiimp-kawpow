@@ -37,13 +37,13 @@ void client_submit_error(YAAMP_CLIENT *client, YAAMP_JOB *job, int id, const cha
 void kawpow_test();
 void get_kawpow_height(int height);
 int get_kawpow_height();
-bool kawpow_submit(YAAMP_CLIENT* client, json_value* json_params);
-void kawpow_hash(const char* input, char* output, uint32_t len);
-bool kawpow_authorize(YAAMP_CLIENT* client, json_value* json_params);
-void kawpow_target_diff(double difficulty, char* buffer);
-void kawpow_block_diff(uint64_t target, char* buffer);
+bool kawpow_submit(YAAMP_CLIENT *client, json_value *json_params);
+void kawpow_hash(const char *input, char *output, uint32_t len);
+bool kawpow_authorize(YAAMP_CLIENT *client, json_value *json_params);
+void kawpow_target_diff(double difficulty, char *buffer);
+void kawpow_block_diff(uint64_t target, char *buffer);
 bool kawpow_send_difficulty(YAAMP_CLIENT *client, double difficulty);
-void kawpow_job_mining_notify_buffer(YAAMP_JOB *job, YAAMP_CLIENT* client, char *buffer);
+void kawpow_job_mining_notify_buffer(YAAMP_JOB *job, YAAMP_CLIENT *client, char *buffer);
 ethash::hash256 KAWPOWQuick(std::string& header_hash, std::string& mix_hash, std::string& nonce_str, int override_height = 0);
 
 #endif // KAWPOW_H
