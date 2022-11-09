@@ -53,7 +53,7 @@ bool client_subscribe(YAAMP_CLIENT *client, json_value *json_params)
 
 		if(strstr(client->version, "proxy") || strstr(client->version, "/3."))
             client->reconnectable = false;
-		
+
 		if(strstr(client->version, "ccminer")) client->stats = true;
 		if(strstr(client->version, "cpuminer-multi")) client->stats = true;
 		if(strstr(client->version, "cpuminer-opt")) client->stats = true;
@@ -595,7 +595,7 @@ void *client_thread(void *p)
 		bool b = false;
 
 		if(!strcmp(method, "mining.subscribe"))
-			b = client_subscribe(client, json_params);
+			b = client_send_result(client, "true");
 
 		else if(!strcmp(method, "mining.authorize"))
 			b = kawpow_authorize(client, json_params);

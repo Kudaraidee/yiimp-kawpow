@@ -2,6 +2,7 @@
 #include "stratum.h"
 
 void set_kawpow_height(int height);
+void set_kawpow_coind(YAAMP_COIND* coind);
 
 void coind_getauxblock(YAAMP_COIND *coind)
 {
@@ -67,7 +68,6 @@ YAAMP_JOB_TEMPLATE *coind_create_template_memorypool(YAAMP_COIND *coind)
 	sprintf(templ->ntime, "%08x", (unsigned int)json_get_int(json_result, "time"));
 	strcpy(templ->nbits, json_get_string(json_result, "bits"));
 	strcpy(templ->prevhash_hex, json_get_string(json_result, "previousblockhash"));
-	strcpy(templ->header_hash, json_get_string(json_result, "pprpcheader"));
 
 	json_value_free(json);
 
@@ -323,6 +323,8 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 		return NULL;
 	}
 
+	set_kawpow_coind(coind);
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// LBC Claim Tree (with wallet gbt patch)
@@ -529,14 +531,7 @@ bool coind_create_job(YAAMP_COIND *coind, bool force)
 
 	CommonLock(&coind->mutex);
 
-	YAAMP_JOB_TEMPLATE *templ;
-
-	// DCR gbt block header is not compatible with getwork submit, so...
-
-	if (coind->usegetwork && strcmp(coind->rpcencoding, "DCR") == 0)
-		templ = decred_create_worktemplate(coind);
-	else
-		templ = coind_create_template(coind);
+	YAAMP_JOB_TEMPLATE *templ = coind_create_template(coind);
 
 	if(!templ)
 	{
